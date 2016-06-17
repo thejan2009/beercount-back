@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"time"
 
 	"database/sql"
 	"encoding/json"
@@ -20,7 +19,8 @@ import (
 var dbMap = initDatabase()
 
 func main() {
-	log.Fatal(http.ListenAndServe(":8080", newRouter()))
+	e := http.ListenAndServe(":8080", newRouter())
+	checkErr(e, "Server problem")
 }
 
 // =======
@@ -139,7 +139,6 @@ func initDatabase() *gorp.DbMap {
 }
 
 func createBatch(b batch) batch {
-	b.Date = time.Now()
 	e := dbMap.Insert(&b)
 	checkErr(e, "batch insert")
 	return b
@@ -162,10 +161,10 @@ type beer struct {
 }
 
 type batch struct {
-	ID     int64     `db:"batch_id" json:"id"`
-	BeerID int64     `db:"beer_id" json:"beerId"`
-	User   string    `db:"user" json:"user"`
-	Date   time.Time `json:"date"`
-	C3     int       `json:"count03"`
-	C5     int       `json:"count05"`
+	ID     int64  `db:"batch_id" json:"id"`
+	BeerID int64  `db:"beer_id" json:"beerId"`
+	User   string `db:"user" json:"user"`
+	Date   int64  `json:"date"`
+	C3     int    `json:"count03"`
+	C5     int    `json:"count05"`
 }
