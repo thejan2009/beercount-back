@@ -1,0 +1,57 @@
+{
+	"id": "d091223b-0f46-dd7d-e000-71b411e1c911",
+	"name": "beercount",
+	"description": "",
+	"order": [
+		"807ea8d4-e692-8f76-123f-a3d8a2e213de",
+		"48ea281f-864c-c34a-996e-319f36b1ec8f"
+	],
+	"folders": [],
+	"timestamp": 1466163846257,
+	"owner": "",
+	"remoteLink": "",
+	"public": false,
+	"requests": [
+		{
+			"id": "48ea281f-864c-c34a-996e-319f36b1ec8f",
+			"headers": "",
+			"url": "localhost:8080/beer",
+			"pathVariables": {},
+			"preRequestScript": null,
+			"method": "POST",
+			"collectionId": "d091223b-0f46-dd7d-e000-71b411e1c911",
+			"data": [],
+			"dataMode": "raw",
+			"name": "create beer",
+			"description": "",
+			"descriptionFormat": "html",
+			"time": 1466164025085,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"rawModeData": "{ \"name\": \"Union\", \"desc\":\"tole so mi dal\" }"
+		},
+		{
+			"id": "807ea8d4-e692-8f76-123f-a3d8a2e213de",
+			"headers": "",
+			"url": "localhost:8080/batch",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1466165106586,
+			"name": "create batch",
+			"description": "",
+			"collectionId": "d091223b-0f46-dd7d-e000-71b411e1c911",
+			"responses": [],
+			"rawModeData": "    {\n        \"beerId\": 1,\n        \"user\": \"testman\",\n        \"count03\": 0,\n        \"count05\": 12\n    }"
+		}
+	]
+}
