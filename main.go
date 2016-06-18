@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
+	"strconv"
 
 	"database/sql"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -48,9 +49,15 @@ var appRoutes = []route{
 
 	route{"beerList", "GET", "/beer", beerList},
 	route{"createBeer", "POST", "/beer", beerCreateHandler},
+	route{"updateBeer", "PUT", "/beer", beerUpdateHandler},
+	route{"getBeer", "GET", "/beer/{beerID}", beerGet},
+	route{"deleteBeer", "DELETE", "/beer/{beerID}", beerDeleteHandler},
 
-	route{"batchList", "GET", "/batch/{user}", batchListHandler},
+	route{"batchList", "GET", "/{user}/batch", batchListHandler},
 	route{"createBatch", "POST", "/batch", batchCreateHandler},
+	route{"updateBatch", "PUT", "/batch", batchUpdateHandler},
+	route{"getBatch", "GET", "/batch/{batchID}", batchGet},
+	route{"deleteBatch", "DELETE", "/batch/{batchID}", batchDeleteHandler},
 }
 
 // ========
@@ -79,6 +86,26 @@ func batchListHandler(w http.ResponseWriter, r *http.Request) {
 	checkErr(e, "Problem encoding batch list to json")
 }
 
+func beerGet(w http.ResponseWriter, r *http.Request) {
+	id, e := strconv.Atoi(parseVars(r, "beerId"))
+	checkErr(e, "Problem parsing request id")
+	b, e := dbMap.Get(beer{}, int64(id))
+	checkErr(e, "Couldn't find beer with such id")
+
+	e = json.NewEncoder(w).Encode(b)
+	checkErr(e, "Problem encoding beer to json")
+}
+
+func batchGet(w http.ResponseWriter, r *http.Request) {
+	id, e := strconv.Atoi(parseVars(r, "batchId"))
+	checkErr(e, "Problem parsing request id")
+	b, e := dbMap.Get(batch{}, int64(id))
+	checkErr(e, "Couldn't find batch with such id")
+
+	e = json.NewEncoder(w).Encode(b)
+	checkErr(e, "Problem encoding batch to json")
+}
+
 func batchCreateHandler(w http.ResponseWriter, r *http.Request) {
 	body, e := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	checkErr(e, "Problem reading json")
@@ -103,6 +130,46 @@ func beerCreateHandler(w http.ResponseWriter, r *http.Request) {
 	b = createBeer(b)
 	e = json.NewEncoder(w).Encode(b)
 	checkErr(e, "Problem encoding beer to json")
+}
+
+func batchUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	body, e := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	checkErr(e, "Problem reading json")
+
+	var b batch
+	e = json.Unmarshal(body, &b)
+	checkErr(e, "Problem unmarshalling json.")
+
+	_, e = dbMap.Update(b)
+	checkErr(e, "Couldn't update batch")
+	e = json.NewEncoder(w).Encode(b)
+	checkErr(e, "Problem encoding batch to json")
+}
+
+func beerUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	body, e := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	checkErr(e, "Problem reading json")
+
+	var b beer
+	e = json.Unmarshal(body, &b)
+	checkErr(e, "Problem unmarshalling json.")
+
+	_, e = dbMap.Update(b)
+	checkErr(e, "Couldn't update beer")
+	e = json.NewEncoder(w).Encode(b)
+	checkErr(e, "Problem encoding batch to json")
+}
+
+func beerDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	id, e := strconv.Atoi(parseVars(r, "beerId"))
+	checkErr(e, "Problem parsing beer ID")
+	deleteBeer(int64(id))
+}
+
+func batchDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	id, e := strconv.Atoi(parseVars(r, "batchID"))
+	checkErr(e, "Problem parsing batch ID")
+	deleteBatch(int64(id))
 }
 
 // =====
@@ -148,6 +215,26 @@ func createBeer(b beer) beer {
 	e := dbMap.Insert(&b)
 	checkErr(e, "beer insert")
 	return b
+}
+
+func deleteBatch(ID int64) int64 {
+	b, e := dbMap.Get(batch{}, ID)
+	checkErr(e, "Batch with requested id doesn't exist")
+
+	count, e := dbMap.Delete(b)
+	checkErr(e, "Couldn't delete batch")
+
+	return count
+}
+
+func deleteBeer(ID int64) int64 {
+	b, e := dbMap.Get(beer{}, ID)
+	checkErr(e, "Beer with requested id doesn't exist")
+
+	count, e := dbMap.Delete(b)
+	checkErr(e, "Couldn't delete beer")
+
+	return count
 }
 
 // =======
