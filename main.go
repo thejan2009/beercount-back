@@ -53,7 +53,7 @@ var appRoutes = []route{
 	route{"getBeer", "GET", "/beer/{beerID}", beerGet},
 	route{"deleteBeer", "DELETE", "/beer/{beerID}", beerDeleteHandler},
 
-	route{"batchList", "GET", "/{user}/batch", batchListHandler},
+	route{"batchList", "GET", "/batch/{user}/all", batchListHandler},
 	route{"createBatch", "POST", "/batch", batchCreateHandler},
 	route{"updateBatch", "PUT", "/batch", batchUpdateHandler},
 	route{"getBatch", "GET", "/batch/{batchID}", batchGet},
@@ -87,7 +87,7 @@ func batchListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func beerGet(w http.ResponseWriter, r *http.Request) {
-	id, e := strconv.Atoi(parseVars(r, "beerId"))
+	id, e := strconv.Atoi(parseVars(r, "beerID"))
 	checkErr(e, "Problem parsing request id")
 	b, e := dbMap.Get(beer{}, int64(id))
 	checkErr(e, "Couldn't find beer with such id")
@@ -97,7 +97,7 @@ func beerGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func batchGet(w http.ResponseWriter, r *http.Request) {
-	id, e := strconv.Atoi(parseVars(r, "batchId"))
+	id, e := strconv.Atoi(parseVars(r, "batchID"))
 	checkErr(e, "Problem parsing request id")
 	b, e := dbMap.Get(batch{}, int64(id))
 	checkErr(e, "Couldn't find batch with such id")
@@ -161,7 +161,7 @@ func beerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func beerDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	id, e := strconv.Atoi(parseVars(r, "beerId"))
+	id, e := strconv.Atoi(parseVars(r, "beerID"))
 	checkErr(e, "Problem parsing beer ID")
 	deleteBeer(int64(id))
 }
