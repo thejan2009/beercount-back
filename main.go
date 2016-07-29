@@ -255,3 +255,5 @@ type batch struct {
 	C3     int    `json:"count03"`
 	C5     int    `json:"count05"`
 }
+
+// test
